@@ -5,4 +5,13 @@
 //  Created by Claire Lee on 11/6/23.
 //
 
-import Foundation
+struct Meal: Identifiable, Codable {
+    let idMeal: String
+    let strMeal: String
+    let strMealThumb: String
+    var id: String { idMeal }
+}
+
+struct MealListResponse: Decodable {
+    let meals: [Meal]
+}

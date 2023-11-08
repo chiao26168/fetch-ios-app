@@ -15,9 +15,9 @@ class MealListViewModel: ObservableObject {
             URLSession.shared.dataTask(with: url) { data, _, error in
                 if let data = data {
                     do {
-                        let response = try JSONDecoder().decode(MealResponse.self, from: data)
+                        let response = try JSONDecoder().decode(MealListResponse.self, from: data)
                         DispatchQueue.main.async {
-                            self.meals = response.meals
+                            self.meals = response.meals.sorted(by: { $0.strMeal < $1.strMeal })
                         }
                     } catch {
                         print("Error decoding JSON: \(error)")
@@ -29,4 +29,5 @@ class MealListViewModel: ObservableObject {
         }
     }
 }
+
 

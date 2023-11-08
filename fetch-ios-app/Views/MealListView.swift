@@ -8,11 +8,18 @@
 import SwiftUI
 
 struct MealListView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    @ObservedObject var mealListViewModel = MealListViewModel()
 
-#Preview {
-    MealListView()
+    var body: some View {
+            NavigationView {
+                List(mealListViewModel.meals) { meal in
+                    NavigationLink(destination: MealDetailView(viewModel: MealDetailViewModel(), mealId: meal.idMeal)) {
+                        Text(meal.strMeal)
+                    }
+                }.onAppear {
+                    mealListViewModel.fetchMeals()
+                }
+                .navigationBarTitle("Dessert Recipes")
+            }
+        }
 }

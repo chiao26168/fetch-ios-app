@@ -8,7 +8,7 @@
 import Foundation
 
 class MealListViewModel: ObservableObject {
-    @Published var meals: [Meal] = []
+    @Published var meals = [Meal]()
 
     func fetchMeals() {
         if let url = URL(string: "https://themealdb.com/api/json/v1/1/filter.php?c=Dessert") {

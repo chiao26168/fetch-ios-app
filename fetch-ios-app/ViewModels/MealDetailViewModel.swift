@@ -6,23 +6,29 @@
 //
 
 import SwiftUI
-import Combine
 
 class MealDetailViewModel: ObservableObject {
     @Published var meal: MealDetail?
 
-    private var cancellables: Set<AnyCancellable> = []
-
     func fetchMealDetails(for mealId: String) {
-        if let url = URL(string: "https://themealdb.com/api/json/v1/1/lookup.php?i=\(mealId)") {
-            URLSession.shared.dataTaskPublisher(for: url)
-                .map(\.data)
-                .decode(type: MealDetailResponse.self, decoder: JSONDecoder())
-                .receive(on: DispatchQueue.main)
-                .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
-                    self?.meal = response.meals.first
-                })
-                .store(in: &cancellables)
+        guard let url = URL(string: "https://themealdb.com/api/json/v1/1/lookup.php?i=\(mealId)") else {
+            return
         }
+
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let data = data, error == nil else {
+                print("Network error: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            do {
+                let decoder = JSONDecoder()
+                let mealDetailResponse = try decoder.decode(MealDetailResponse.self, from: data)
+                self?.meal = mealDetailResponse.meals.first
+            } catch {
+                // Handle decoding error
+                print("Error decoding JSON: \(error)")
+            }
+        }.resume()
     }
 }

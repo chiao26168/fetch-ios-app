@@ -17,46 +17,10 @@ struct MealDetailView: View {
         ScrollView {
             if let meal = viewModel.meal {
                 VStack(alignment: .leading, spacing: 10) {
-                    WebImage(url: URL(string: meal.strMealThumb ?? ""))
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    HStack {
-                        Image(systemName: "book.circle.fill")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                        
-                        Text("Instructions:")
-                            .font(.headline)
-                            .bold()
-                    }
-                    let instructionParagraphs = meal.strInstructions?.components(separatedBy: "\n")
-                                        
-                    if let paragraphs = instructionParagraphs {
-                        ForEach(0..<paragraphs.count, id: \.self) { index in
-                            Text("Step \(index + 1): \(paragraphs[index])")
-                        }
-                    }
-                    Text("")
-                    if let ingredientsAndMeasures = getIngredientsAndMeasures(from: meal) {
-                        HStack {
-                            Image(systemName: "pin.fill")
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                            
-                            Text("Ingredients:")
-                                .font(.headline)
-                                .bold()
-                        }
-                        ForEach(ingredientsAndMeasures, id: \.0) { ingredient, measure in
-                            IngredientMeasurePairView(ingredient: ingredient, measure: measure)
-                        }
-                    }
-                    HStack {
-                        Spacer()
-                        Text("- End -")
-                            .font(.caption)
-                        Spacer()
-                    }
+                    MealImageView(imageUrl: URL(string: meal.strMealThumb ?? ""))
+                    InstructionView(instructions: meal.strInstructions)
+                    IngredientsView(ingredientsAndMeasures: meal.ingredientsAndMeasures ?? [])
+                    EndLabelView()
                 }
                 .padding()
             }
@@ -64,24 +28,8 @@ struct MealDetailView: View {
         .onAppear {
             viewModel.fetchMealDetails(for: mealId)
         }
-        .navigationTitle(viewModel.meal?.strMeal ?? "").navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func getIngredientsAndMeasures(from meal: MealDetail) -> [(String, String)]? {
-        let mirror = Mirror(reflecting: meal)
-        var ingredientsAndMeasures: [(String, String)] = []
-
-        for case let (label?, value) in mirror.children {
-            if label.hasPrefix("strIngredient"), let ingredient = value as? String, !ingredient.isEmpty {
-                let measureLabel = label.replacingOccurrences(of: "strIngredient", with: "strMeasure")
-                let measure = mirror.children.first { $0.label == measureLabel }?.value as? String
-                if let measure = measure {
-                    ingredientsAndMeasures.append((ingredient, measure))
-                }
-            }
-        }
-
-        return ingredientsAndMeasures.isEmpty ? nil : ingredientsAndMeasures
+        .navigationTitle(viewModel.meal?.strMeal ?? "")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

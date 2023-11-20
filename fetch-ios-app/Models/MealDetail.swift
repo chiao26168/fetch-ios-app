@@ -66,4 +66,25 @@ struct MealDetail: Codable {
     let strCreativeCommonsConfirmed: String?
     let dateModified: String?
     
+    var ingredientsAndMeasures: [(String, String)]? {
+        let mirror = Mirror(reflecting: self)
+        var result: [(String, String)] = []
+
+        for index in 1...20 {
+            let ingredientLabel = "strIngredient\(index)"
+            let measureLabel = "strMeasure\(index)"
+
+            guard
+                let ingredient = mirror.children.first(where: { $0.label == ingredientLabel })?.value as? String,
+                let measure = mirror.children.first(where: { $0.label == measureLabel })?.value as? String,
+                !ingredient.isEmpty || !measure.isEmpty
+            else {
+                continue
+            }
+
+            result.append((ingredient, measure))
+        }
+        return result.isEmpty ? nil : result
+    }
+    
 }

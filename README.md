@@ -14,6 +14,7 @@ This iOS app is a recipe browser that allows users to explore and discover desse
 
 Here's a quick demo of the Fetch iOS app:
 
+<img src="https://github.com/chiao26168/fetch-ios-app/blob/main/demo.gif" alt="Demo" width="300">
 
 ## API Endpoints
 The app utilizes two endpoints from TheMealDB API:
